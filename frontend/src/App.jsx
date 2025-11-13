@@ -1,71 +1,71 @@
-import { createBrowserRouter, RouterProvider } from 'react-router'
-import { AuthProvider } from './context/AuthContext'
-
-// Components
-import Layout from './components/Layout'
-import ProtectedRoute from './components/ProtectedRoute'
-import PublicRoute from './components/PublicRoute'
-
-// Pages
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import Profile from './pages/Profile'
+import { useState } from 'react'
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router'
+import Navbar from './components/Navbar'
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+import ProfilePage from './pages/ProfilePage'
+import JobsPage from './pages/JobsPage'
+import JobDetailPage from './pages/JobDetailPage'
+import ResourcesPage from './pages/ResourcePage'
+import DashboardPage from './pages/DashboardPage'
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('user') ? true : false)
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user')
+    return saved ? JSON.parse(saved) : null
+  })
+
+  const handleLogin = (userData) => {
+    setUser(userData)
+    setIsAuthenticated(true)
+    localStorage.setItem('user', JSON.stringify(userData))
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    setIsAuthenticated(false)
+    localStorage.removeItem('user')
+  }
+
+  const Shell = () => (
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
+      <Navbar isAuthenticated={isAuthenticated} user={user} onLogout={handleLogout} />
+      <Outlet />
+    </div>
+  )
+
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <Layout />,
+      element: <Shell />,
       children: [
-        {
-          index: true,
-          element: <Home />
-        },
-        // Public routes (redirect to dashboard if authenticated)
+        { index: true, element: <HomePage /> },
         {
           path: 'login',
-          element: (
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          )
+          element: isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage onLogin={handleLogin} />
         },
         {
-          path: 'register',
-          element: (
-            <PublicRoute>
-              <Register />
-            </PublicRoute>
-          )
-        },
-        // Protected routes (require authentication)
-        {
-          path: 'dashboard',
-          element: (
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          )
+          path: 'signup',
+          element: isAuthenticated ? <Navigate to="/dashboard" /> : <SignupPage onLogin={handleLogin} />
         },
         {
           path: 'profile',
-          element: (
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          )
+          element: isAuthenticated ? <ProfilePage user={user} onUpdateUser={setUser} /> : <Navigate to="/login" />
+        },
+        { path: 'jobs', element: <JobsPage user={user} /> },
+        { path: 'jobs/:id', element: <JobDetailPage user={user} /> },
+        { path: 'resources', element: <ResourcesPage user={user} /> },
+        {
+          path: 'dashboard',
+          element: isAuthenticated ? <DashboardPage user={user} /> : <Navigate to="/login" />
         }
       ]
     }
   ])
 
-  return (
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App
