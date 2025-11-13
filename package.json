@@ -1,0 +1,18 @@
+{
+  "name": "youth-career-platform",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": " npm --prefix backend i && npm --prefix frontend i",
+    "frontend": "npm --prefix frontend run dev",
+    "backend": "npm --prefix backend run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.17",
+    "tailwindcss": "^4.1.17"
+  }
+}
