@@ -1,11 +1,9 @@
 import { NavLink, useNavigate } from 'react-router';
-import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
-const Navbar = () => {
+const Navbar = ({ isAuthenticated, user, onLogout }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated, logout, user } = useAuth();
 
   const closeMenu = () => setOpen(false);
 
@@ -23,19 +21,7 @@ const Navbar = () => {
         </NavLink>
 
         <nav className="hidden md:flex items-center gap-2">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-xl transition-all ${
-                isActive
-                  ? 'text-white bg-indigo-500/15 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.25)]'
-                  : 'text-gray-400 hover:bg-white/6 hover:text-gray-200'
-              }`
-            }
-          >
-            Home
-          </NavLink>
+          
           {isAuthenticated && (
             <>
               <NavLink
@@ -77,7 +63,7 @@ const Navbar = () => {
               </button>
               <button 
                 className="px-3.5 py-2.5 rounded-xl font-semibold text-white bg-linear-to-br from-indigo-500 to-cyan-400 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all" 
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/signup')}
               >
                 Register
               </button>
@@ -89,7 +75,7 @@ const Navbar = () => {
               </div>
               <button 
                 className="px-3.5 py-2.5 rounded-xl font-semibold text-gray-200 border border-white/18 hover:bg-white/5 transition-all" 
-                onClick={() => { logout(); navigate('/login'); }}
+                onClick={() => { onLogout?.(); navigate('/login'); }}
               >
                 Logout
               </button>
@@ -142,7 +128,7 @@ const Navbar = () => {
               </NavLink>
               <button 
                 className="px-3 py-2.5 rounded-xl font-semibold text-gray-200 border border-white/18 mt-2" 
-                onClick={() => { logout(); navigate('/login'); closeMenu(); }}
+                onClick={() => { onLogout?.(); navigate('/login'); closeMenu(); }}
               >
                 Logout
               </button>
@@ -157,7 +143,7 @@ const Navbar = () => {
               </button>
               <button 
                 className="px-3 py-2.5 rounded-xl font-semibold text-white bg-linear-to-br from-indigo-500 to-cyan-400" 
-                onClick={() => { navigate('/register'); closeMenu(); }}
+                onClick={() => { navigate('/signup'); closeMenu(); }}
               >
                 Register
               </button>
