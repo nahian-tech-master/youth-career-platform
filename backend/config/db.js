@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const connectDB = async ()=>{
     try{
-        const mongoURI =`${process.env.MONGODB_URI}youth-career` || "mongodb://localhost:27017/youth-career";
-        const conn = await mongoose.connect(mongoURI);
+        const mongoURI =process.env.MONGODB_URI || "mongodb://localhost:27017/";
+        const conn = await mongoose.connect(`${mongoURI}youth-career`);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
 
     } catch (err){
