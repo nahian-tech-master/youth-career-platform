@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_SERVER_URL;
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -20,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Verify token and fetch user data from backend
-        const response = await axios.get('http://localhost:5000/api/auth/verify', {
+        const response = await axios.get(`${API_BASE_URL}/auth/verify`, {
           headers: {
             'Authorization': `Bearer ${storedToken}`
           }
@@ -45,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (credentials) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials);
       
       // Store JWT token in localStorage
       localStorage.setItem('token', response.data.token);
@@ -63,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   // Register function
   const register = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, userData);
       
       // Store JWT token in localStorage
       localStorage.setItem('token', response.data.token);

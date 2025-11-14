@@ -4,7 +4,7 @@ export default function HomePage() {
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 text-white py-16 px-4">
+      <div className="bg-linear-to-br from-blue-600 via-blue-500 to-cyan-500 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance">Launch Your Career Path Today</h1>
           <p className="text-xl md:text-2xl text-blue-100 mb-8 text-pretty">
@@ -50,7 +50,7 @@ export default function HomePage() {
               const Icon = feature.icon
               return (
                 <div key={idx} className="card p-8">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-2">{feature.title}</h3>
