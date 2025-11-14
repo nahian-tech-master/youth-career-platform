@@ -1,10 +1,11 @@
 import { User, Mail, Lock, Briefcase, ArrowRight, GraduationCap, Building2, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function SignupPage({ onLogin }) {
   const { register } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -32,7 +33,8 @@ export default function SignupPage({ onLogin }) {
     setLoading(true);
     try {
       const res = await register({
-        fullName: `${form.firstName} ${form.lastName}`.trim(),
+        firstName: form.firstName,
+        lastName: form.lastName,
         email: form.email,
         password: form.password,
         education: form.education,
@@ -42,6 +44,10 @@ export default function SignupPage({ onLogin }) {
       });
       if (res?.success) {
         setSuccess("Account created successfully!");
+        if (res.user) {
+          onLogin?.(res.user);
+        }
+        navigate("/dashboard");
       } else {
         setError(res?.error || "Registration failed");
       }

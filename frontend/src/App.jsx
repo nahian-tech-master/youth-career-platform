@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router'
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router'
 import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -9,29 +8,17 @@ import JobsPage from './pages/JobsPage'
 import JobDetailPage from './pages/JobDetailPage'
 import ResourcesPage from './pages/ResourcePage'
 import DashboardPage from './pages/DashboardPage'
+import ProtectedRoute from './components/ProtectedRoute'
+import PublicRoute from './components/PublicRoute'
+import { useAuth } from './context/AuthContext.jsx'
+import EditProfilePage from './pages/EditProfilePage'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('user') ? true : false)
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user')
-    return saved ? JSON.parse(saved) : null
-  })
-
-  const handleLogin = (userData) => {
-    setUser(userData)
-    setIsAuthenticated(true)
-    localStorage.setItem('user', JSON.stringify(userData))
-  }
-
-  const handleLogout = () => {
-    setUser(null)
-    setIsAuthenticated(false)
-    localStorage.removeItem('user')
-  }
+  const { user, isAuthenticated, logout } = useAuth()
 
   const Shell = () => (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
-      <Navbar isAuthenticated={isAuthenticated} user={user} onLogout={handleLogout} />
+      <Navbar isAuthenticated={isAuthenticated} user={user} onLogout={logout} />
       <Outlet />
     </div>
   )
@@ -41,25 +28,49 @@ function App() {
       path: '/',
       element: <Shell />,
       children: [
-        { index: true, element: <HomePage /> },
+        { index: true, element: <PublicRoute><HomePage /></PublicRoute> },
         {
           path: 'login',
-          element: isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage onLogin={handleLogin} />
+          element: (
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          )
         },
         {
           path: 'signup',
-          element: isAuthenticated ? <Navigate to="/dashboard" /> : <SignupPage onLogin={handleLogin} />
+          element: (
+            <PublicRoute>
+              <SignupPage />
+            </PublicRoute>
+          )
         },
         {
           path: 'profile',
-          element: isAuthenticated ? <ProfilePage user={user} onUpdateUser={setUser} /> : <Navigate to="/login" />
+          element: (
+            <ProtectedRoute>
+              <ProfilePage user={user} />
+            </ProtectedRoute>
+          )
+        },
+        {
+          path: 'profile/edit',
+          element: (
+            <ProtectedRoute>
+              <EditProfilePage />
+            </ProtectedRoute>
+          )
         },
         { path: 'jobs', element: <JobsPage user={user} /> },
         { path: 'jobs/:id', element: <JobDetailPage user={user} /> },
         { path: 'resources', element: <ResourcesPage user={user} /> },
         {
           path: 'dashboard',
-          element: isAuthenticated ? <DashboardPage user={user} /> : <Navigate to="/login" />
+          element: (
+            <ProtectedRoute>
+              <DashboardPage user={user} />
+            </ProtectedRoute>
+          )
         }
       ]
     }
