@@ -50,17 +50,13 @@ router.put(
       }
     }
 
-    // Normalize skills: accept array of strings or objects
+    // Normalize skills: convert to simple string array (no objects!)
     if (sanitized.skills && Array.isArray(sanitized.skills)) {
       sanitized.skills = sanitized.skills.map(s => {
-        if (typeof s === 'string') return { name: s, level: 'Beginner', yearsOfExperience: 0 };
-        return {
-          name: s.name,
-          level: s.level || 'Beginner',
-          yearsOfExperience: s.yearsOfExperience || 0,
-          addedDate: s.addedDate || Date.now()
-        };
-      });
+        if (typeof s === 'string') return s.trim();
+        // If object, extract name property
+        return (s.name || '').trim();
+      }).filter(s => s.length > 0); // Remove empty strings
     }
 
     // Perform update and return the new document (exclude sensitive fields)

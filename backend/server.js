@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import Authroute from "./routes/AuthRoute.js";
 import UserRoute from "./routes/UserRoute.js";
+import aiSkillRoutes from "./routes/aiSkillRoutes.js";
+import cvRoutes from "./routes/cvRoutes.js";
 import User from "./models/userModel.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import { authMiddleware, isAuthenticated } from "./middlewares/authMiddleware.js";
@@ -49,6 +51,9 @@ app.get('/api/auth/verify', authMiddleware, async (req, res, next) => {
 });
 
 app.use("/api/user", authMiddleware, isAuthenticated, UserRoute);
+
+app.use("/api/ai", aiSkillRoutes);
+app.use("/api/cv", cvRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

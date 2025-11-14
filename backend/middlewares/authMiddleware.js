@@ -31,7 +31,7 @@ export const authMiddleware = (req, res, next) => {
 // Optional: Middleware to check if user is authenticated
 export const isAuthenticated = (req, res, next) => {
   if (!req.user) {
-    throw new AppError("User not authenticated", 401);
+    return next(new AppError("User not authenticated", 401));
   }
   next();
 };

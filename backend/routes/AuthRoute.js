@@ -2,6 +2,7 @@ import { Router } from "express";
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ const validateEmail = (email) => {
 // REGISTER ROUTE
 router.post("/register", async (req, res) => {
   try {
-    const { firstName, lastName, email, password, education, department, experienceLevel, preferredTrack } = req.body;
+    const { firstName, lastName, email, password, educationLevel, department, experienceLevel, preferredCareerTracks, targetRoles, skills } = req.body;
 
     // Validation
     if (!firstName || !email || !password) {
@@ -44,14 +45,12 @@ router.post("/register", async (req, res) => {
       lastName: lastName ? lastName.trim() : null,
       email,
       passwordHash,
-      education: education || null,
+      educationLevel: educationLevel || null,
       department: department || null,
       experienceLevel: experienceLevel || "Fresher",
-      preferredCareerTracks: preferredTrack ? [preferredTrack] : [],
-      skills: [],
-      projects: [],
-      viewedJobs: [],
-      appliedJobs: [],
+      preferredCareerTracks: Array.isArray(preferredCareerTracks) ? preferredCareerTracks : (preferredCareerTracks ? [preferredCareerTracks] : []),
+      targetRoles: Array.isArray(targetRoles) ? targetRoles : (targetRoles ? [targetRoles] : []),
+      skills: Array.isArray(skills) ? skills.map(s => (typeof s === 'string' ? s : s.name || '')) : [],
     });
 
     // Generate JWT token (include names for convenience)
@@ -124,6 +123,21 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// VERIFY TOKEN ROUTE
+router.get("/verify", authMiddleware, async (req, res) => {
+  try {
+    // User is attached by authMiddleware
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ user });
+  } catch (err) {
+    console.error("Verify error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
