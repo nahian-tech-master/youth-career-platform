@@ -54,7 +54,7 @@ export default function ResourcesPage() {
           {resources.map((resource) => (
             <div key={resource.id} className="card p-6 hover:shadow-lg transition-shadow cursor-pointer">
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <button className="text-slate-400 hover:text-yellow-400 transition-colors">

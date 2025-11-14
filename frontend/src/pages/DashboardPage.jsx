@@ -22,7 +22,7 @@ export default function DashboardPage() {
             return (
               <div key={idx} className="card p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
               { title: "Web Design", platform: "YouTube", duration: "15h" },
             ].map((course, idx) => (
               <div key={idx} className="card p-4 hover:shadow-lg transition-shadow cursor-pointer">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center mb-3">
+                <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center mb-3">
                   <BookOpen className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="font-semibold text-slate-900 text-sm mb-1 hover:text-blue-600 transition-colors">
