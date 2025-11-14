@@ -16,19 +16,18 @@ export const AuthProvider = ({ children }) => {
       const storedToken = localStorage.getItem('token');
       
       if (!storedToken) {
+        // Clear any stale auth header
+        delete axios.defaults.headers.common['Authorization'];
         setLoading(false);
         return;
       }
 
       try {
         // Verify token and fetch user data from backend
-        const response = await axios.get(`${API_BASE_URL}/auth/verify`, {
-          headers: {
-            'Authorization': `Bearer ${storedToken}`
-          }
-        });
+        axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+        const response = await axios.get(`${API_BASE_URL}/auth/verify`);
 
-        setUser(response.data);
+        setUser(response.data.user);
         setToken(storedToken);
       } catch (error) {
         console.error('Token verification failed:', error);
@@ -36,6 +35,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
+        delete axios.defaults.headers.common['Authorization'];
       } finally {
         setLoading(false);
       }
@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', response.data.token);
       setToken(response.data.token);
       setUser(response.data.user);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       
       return { success: true, user: response.data.user };
     } catch (error) {
@@ -71,6 +72,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', response.data.token);
       setToken(response.data.token);
       setUser(response.data.user);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       
       return { success: true, user: response.data.user };
     } catch (error) {
@@ -85,6 +87,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
+    delete axios.defaults.headers.common['Authorization'];
   };
 
   // Update user data

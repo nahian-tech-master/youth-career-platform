@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import Authroute from "./routes/AuthRoute.js";
 import UserRoute from "./routes/UserRoute.js";
+import User from "./models/userModel.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import { authMiddleware, isAuthenticated } from "./middlewares/authMiddleware.js";
 
@@ -28,16 +29,26 @@ app.use(cors(corsOptions));
 // Routes
 app.use('/api/auth', Authroute);
 
-// Verify token route
-app.get('/api/auth/verify', authMiddleware, (req, res) => {
-  res.json({ 
-    success: true, 
-    message: "Token is valid",
-    user: req.user 
-  });
+// Verify token route - returns full user (without passwordHash)
+app.get('/api/auth/verify', authMiddleware, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).select('-passwordHash');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Token is valid',
+      user,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.use("/api/user", isAuthenticated, UserRoute);
+app.use("/api/user", authMiddleware, isAuthenticated, UserRoute);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
