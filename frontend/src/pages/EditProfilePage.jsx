@@ -2,11 +2,13 @@ import { useState, useEffect } from "react"
 import { User, Mail, Target, Save, Plus, X } from "lucide-react"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext.jsx"
+import { useNavigate } from "react-router"
 
 const API_BASE_URL = import.meta.env.VITE_SERVER_URL
 
 export default function EditProfilePage() {
   const { user, token, updateUser } = useAuth()
+  const navigate = useNavigate()
 
   const [form, setForm] = useState({
     firstName: "",
@@ -125,6 +127,7 @@ export default function EditProfilePage() {
       if (response.data?.success && response.data.user) {
         updateUser(response.data.user)
         setSuccess("Profile updated successfully")
+        navigate('/profile')
       } else {
         setError(response.data?.message || "Failed to update profile")
       }
