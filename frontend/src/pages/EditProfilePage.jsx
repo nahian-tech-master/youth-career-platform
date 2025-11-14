@@ -294,11 +294,13 @@ export default function EditProfilePage() {
             <textarea
               name="bio"
               rows="5"
+              cols="70"
               maxLength={500}
               value={form.bio}
               onChange={handleChange}
               placeholder="Tell us about your career goals, strengths, and interests..."
-              className="input-field resize-y min-h-[120px]"
+              className="input-field resize-y min-h-[120px] p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-2xl"
+              
             />
             <div className="mt-2 flex items-center justify-between">
               <p className="text-xs text-slate-500">Keep it concise and professional. Max 500 characters.</p>
@@ -355,7 +357,7 @@ export default function EditProfilePage() {
 
           {/* Skills Section */}
           <div>
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Skills</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-4 ">Skills</h2>
             <div className="space-y-4">
               {/* Add new skill */}
               <div className="flex gap-2">
@@ -364,7 +366,7 @@ export default function EditProfilePage() {
                   value={newSkillName}
                   onChange={(e) => setNewSkillName(e.target.value)}
                   placeholder="Add a skill (e.g., React)"
-                  className="input-field flex-1"
+                  className="input-field flex-1 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-2xl"
                 />
                 <button
                   type="button"
