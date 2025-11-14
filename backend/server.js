@@ -1,58 +1,50 @@
-import express from 'express';
+import express from "express";
 import cors from 'cors';
-import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import Authroute from "./routes/AuthRoute.js";
+import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 
+dotenv.config();
+await connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key_here';
 
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
 
 // Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Youth Career Platform API' });
+app.use('/api/auth', Authroute);
+
+app.get("/api/message", (req, res) => {
+    res.status(200).json({ message: 'hello how are you' });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running', timestamp: new Date() });
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ 
+        status: "Server is running",
+        timestamp: new Date(),
+        environment: process.env.NODE_ENV || "development"
+    });
 });
 
-// Example auth endpoint
-app.post('/api/auth/login', (req, res) => {
-  try {
-    const { email, password } = req.body;
+app.use(notFound);
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    // TODO: Verify user credentials from database
-    // This is a placeholder - implement proper authentication
-    const token = jwt.sign(
-      { email, id: 1 },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({ token, message: 'Login successful' });
-  } catch (error) {
-    res.status(500).json({ error: 'Server error', details: error.message });
-  }
+const Port = process.env.PORT || 4000;
+app.listen(Port, () => {
+    console.log(`Server is running on http://localhost:${Port}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal Server Error' });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-
-export default app;
