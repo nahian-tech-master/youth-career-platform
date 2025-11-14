@@ -3,7 +3,9 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import Authroute from "./routes/AuthRoute.js";
+import UserRoute from "./routes/UserRoute.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
+import { authMiddleware, isAuthenticated } from "./middlewares/authMiddleware.js";
 
 dotenv.config();
 await connectDB();
@@ -26,9 +28,16 @@ app.use(cors(corsOptions));
 // Routes
 app.use('/api/auth', Authroute);
 
-app.get("/api/message", (req, res) => {
-    res.status(200).json({ message: 'hello how are you' });
+// Verify token route
+app.get('/api/auth/verify', authMiddleware, (req, res) => {
+  res.json({ 
+    success: true, 
+    message: "Token is valid",
+    user: req.user 
+  });
 });
+
+app.use("/api/user", isAuthenticated, UserRoute);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

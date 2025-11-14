@@ -12,7 +12,6 @@ export const authMiddleware = (req, res, next) => {
 
     const token = authHeader.substring(7); // Remove "Bearer " prefix
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_secret_key");
 
     // Attach user info to request
@@ -35,19 +34,4 @@ export const isAuthenticated = (req, res, next) => {
     throw new AppError("User not authenticated", 401);
   }
   next();
-};
-
-// Optional: Role-based authorization middleware (for future use)
-export const authorize = (allowedRoles = []) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return next(new AppError("User not authenticated", 401));
-    }
-
-    if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
-      return next(new AppError("Insufficient permissions", 403));
-    }
-
-    next();
-  };
 };

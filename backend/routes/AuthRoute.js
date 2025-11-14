@@ -14,11 +14,11 @@ const validateEmail = (email) => {
 // REGISTER ROUTE
 router.post("/register", async (req, res) => {
   try {
-    const { fullName, email, password, education, department, experienceLevel, preferredTrack } = req.body;
+    const { firstName, lastName, email, password, education, department, experienceLevel, preferredTrack } = req.body;
 
     // Validation
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: "Full name, email, and password are required" });
+    if (!firstName || !email || !password) {
+      return res.status(400).json({ message: "First name, email, and password are required" });
     }
 
     if (password.length < 6) {
@@ -40,22 +40,23 @@ router.post("/register", async (req, res) => {
 
     // Create user with optional profile fields
     const user = await User.create({
-      name:fullName,
+      firstName: firstName.trim(),
+      lastName: lastName ? lastName.trim() : null,
       email,
       passwordHash,
       education: education || null,
       department: department || null,
       experienceLevel: experienceLevel || "Fresher",
-      preferredTrack: preferredTrack || null,
+      preferredCareerTracks: preferredTrack ? [preferredTrack] : [],
       skills: [],
       projects: [],
       viewedJobs: [],
       appliedJobs: [],
     });
 
-    // Generate JWT token
+    // Generate JWT token (include names for convenience)
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName },
       process.env.JWT_SECRET || "your_secret_key",
       { expiresIn: "7d" }
     );

@@ -3,9 +3,13 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
   {
     // Basic Authentication Fields
-    name: {
+    firstName: {
       type: String,
       required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
       trim: true,
     },
     email: {
